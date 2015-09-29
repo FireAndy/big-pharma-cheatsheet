@@ -3,6 +3,18 @@
     var module = angular.module("big-pharma-tool", []);
 
     function applicationController(scope, dataService) {
+        function avg(array) {
+            var sum = 0,
+                i;
+            for (i = 0; i < array.length; i++) {
+                sum += array[i];
+            }
+            if (array.length === 0) {
+                return null;
+            }
+            return Math.round(sum / array.length);
+        }
+
         function effectsInFamily(effects, family) {
             return $.grep(
                     effects,
@@ -27,13 +39,44 @@
             scope.effectFamilies = effectGroups;
         }
 
+        scope.sort = function(level) {
+            scope.effectFamilies.sort(function (a, b) {
+                if (!b.effects[level].price) {
+                    return -1;
+                } else if (!a.effects[level].price) {
+                    return 1;
+                }
+                return b.effects[level].price - a.effects[level].price;
+            });
+        }
+
         scope.boxClass = function(effect, index) {
             var value = index + 1,
                 isInBoundary = effect.boundary[0] <= value && effect.boundary[1] >= value;
             return isInBoundary ? "ib" : "oob";
         }
 
+        scope.avg = function(level) {
+            return avg($.map($.grep(scope.effectFamilies, function (f) { return f.effects[level] && f.effects[level].price; }), function (f) { return f.effects[level].price; }));
+        }
+
+        scope.dev = function(effect) {
+            var diff;
+            if (!effect.price) {
+                return null;
+            }
+            diff = effect.price - scope.avg(effect.level);
+            if (diff < 0) {
+                return "" + diff;
+            } else if (diff > 0) {
+                return "+" + diff;
+            } else {
+                return "-";
+            }
+        }
+
         scope.boxes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
+        scope.levels = [0, 1, 2, 3, 4];
         scope.effectFamilies = [];
         dataService
             .getEffects()

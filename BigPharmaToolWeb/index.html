@@ -8,6 +8,20 @@
 </head>
 <body>
     <div class="container-fluid">
+        <div class="curerow">
+            <div class="family"></div>
+            <div class="effects">
+                <div class="cureset" ng-repeat="level in levels">
+                    <div class="cure" ng-click="sort(level)">
+                        <div>
+                            <label>Level {{level + 1}}</label>
+                        </div>
+                        <div>Avg: {{avg(level) | currency : $ : 0 }}</div>
+                    </div>
+                    <div class="react"></div>
+                </div>
+            </div>
+        </div>
         <div class="curerow" ng-repeat="family in effectFamilies">
             <div class="family">{{family.name}}</div>
             <div class="effects">
@@ -16,8 +30,9 @@
                         <div class="cure" ng-class="'level' + effect.level">
                             <div>
                                 <label ng-class="'level' + effect.level">{{effect.id}}</label>
-                                <span class="pull-right">
-                                    $ <input type="text" ng-model="effect.price" />
+                                <span class="price pull-right">
+                                    $ <input type="number" ng-model="effect.price" /><br/>
+                                    {{ dev(effect) }}
                                 </span>
                             </div>
                             <div class="conc">
