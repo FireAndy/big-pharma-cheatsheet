@@ -19,6 +19,11 @@
     cursor: default;
 }
 
+.dark-box() {
+    background-color: #283232;
+    color: white;
+}
+
 body {
     padding: 20px;
     background-color: #3c4a4b;
@@ -32,11 +37,11 @@ input {
     border: 1px dashed gray;
     text-align: right;
     width: 35px;
-
 }
 
 .container-fluid {
-    max-width: 1780px;
+    max-width: 1750px;
+    padding: 0;
 }
 
 .curerow {
@@ -46,26 +51,54 @@ input {
     white-space: nowrap;
 }
 
-.header .family,
-.header .cure {
+.logo {
+    .dark-box();
+    padding: 10px;
+    margin-bottom: 10px;
+    color: #e0e0e0;
+
+    label {
+    }
+
+    span {
+        float:right;
+        font-size: 8pt;
+    }
+}
+
+.header .sorts {
+    font-size: 8pt;
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+}
+
+.header a {
     cursor: pointer;
+    color: @level1;
 }
 
 .family {
+    .dark-box();
     position: absolute;
     left: 0;
     top: 0;
-    width: 100px;
+    width: 120px;
     height: 85px;
-    padding-top: 10px;
     vertical-align: top;
-    color: white;
+}
+
+.box-content {
+    position: relative;
+    width: 100%;
+    height: 85px;
+    padding: 10px;
 }
 
 .effects {
     position: absolute;
-    left: 110px;
-    right: 20px;
+    left: 130px;
+    right: 0;
     height: 85px;
     overflow: hidden;
     white-space: nowrap;
@@ -95,19 +128,16 @@ input {
     background-color: #415b65;
     color: white;
     margin-right: 10px;
-    padding: 10px;
     width: 180px;
     height: 85px;
 }
 
 .react {
     .inline();
+    .dark-box();
     float: left;
-    background-color: #283232;
-    color: white;
     width: 160px;
     height: 85px;
-    padding: 10px;
     margin-right: 10px;
 }
 

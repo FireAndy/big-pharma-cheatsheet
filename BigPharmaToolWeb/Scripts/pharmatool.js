@@ -94,6 +94,26 @@
                 if (!a.effects[level] || !a.effects[level].price) {
                     return 1;
                 }
+                return 0;
+            });
+        }
+
+        scope.sortByConc = function(level) {
+            scope.effectFamilies.sort(function (a, b) {
+                if (a.effects[level] && b.effects[level]) {
+                    return avg([b.effects[level].boundary[0], b.effects[level].boundary[1]])
+                            - avg([a.effects[level].boundary[0], a.effects[level].boundary[1]]);
+                }
+                if (!a.effects[level]  && !b.effects[level]) {
+                    return 0;
+                }
+                if (!b.effects[level]) {
+                    return -1;
+                }
+                if (!a.effects[level]) {
+                    return 1;
+                }
+                return 0;
             });
         }
 
@@ -139,7 +159,12 @@
         scope.effectFamilies = [];
         dataService
             .getEffects()
-            .then(groupEffects);
+            .then(groupEffects)
+            .then(function() {
+                scope.sortByConc(2);
+                scope.sortByConc(3);
+                scope.sortByConc(4);
+            });
     }
 
     module.controller("app-controller", ["$scope", "data-service", applicationController]);
@@ -205,15 +230,14 @@
                 element.on("mousemove touchmove pointermove", function (evt) {
                     var relX,
                         deltaX,
-                        newX,
-                        offsetX;
+                        newX;
                     if (moving) {
                         relX = evt.pageX - elementStartX;
                         deltaX = startX - relX;
-                        newX = elementStartX - deltaX;
-                        offsetX = newX - initialX;
-                        if (offsetX < 0 && (offsetX + totalWidth >= element.parent().width())) {
-                            $(all).offset({ left: newX });
+                        newX = Math.max(Math.min(elementStartX - deltaX, initialX), initialX + element.parent().width() - totalWidth);
+                        $(all).offset({ left: newX });
+                        if (newX == initialX) {
+                            startX = evt.pageX - initialX;
                         }
                     }
                 });

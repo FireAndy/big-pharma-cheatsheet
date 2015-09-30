@@ -6,70 +6,97 @@
     <link href="Content/bootstrap-theme.css" rel="stylesheet" />
     <link href="Content/Site.css" rel="stylesheet" />
 </head>
-<body>
+<body ng-cloak>
     <div class="container-fluid">
+        <div class="logo">
+            <label>Big Pharma Cheatsheet</label>
+            <span>
+                Enter sales prices and sort by level prices or family totals.
+                You can also sort by concentration to find complementary effects.
+                All sorts are descending.
+            </span>
+        </div>
         <div class="curerow header">
-            <div class="family" ng-click="sortFamilies()">
-                <label>Family</label>
+            <div class="family">
+                <div class="box-content">
+                    <label>Family</label>
+                    <div class="sorts">
+                        sort by
+                        <a href="javascript:void(0)" ng-click="sortFamilies()">dev</a>
+                    </div>
+                </div>
             </div>
             <div class="effects">
                 <div class="draggable" bp-draggable>
                     <div class="cureset" ng-repeat="level in levels">
-                        <div class="cure" ng-click="sort($index)">
-                            <div>
-                                <label>Level {{$index + 1}}</label>
+                        <div class="cure">
+                            <div class="box-content">
+                                <div>
+                                    <label>Level {{$index + 1}}</label>
+                                </div>
+                                <div>Avg: {{level.avg | currency : $ : 0 }}</div>
+                                <div class="sorts">
+                                    sort by
+                                    <a href="javascript:void(0)" ng-click="sort($index)">price</a>
+                                    <a href="javascript:void(0)" ng-click="sortByConc($index)">conc</a>
+                                </div>
                             </div>
-                            <div>Avg: {{level.avg | currency : $ : 0 }}</div>
                         </div>
-                        <div class="react"></div>
+                        <div class="react" ng-show="$index < 4"></div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="curerow" ng-repeat="family in effectFamilies">
             <div class="family">
-                <div>
-                    <label>{{family.name}}</label>
-                </div>
-                <div class="money">
-                    <label>Total:</label>{{family.total | currency : $ : 0 }}
-                </div>
-                <div class="money">
-                    <label>Dev:</label>{{family.dev | signed}}
+                <div class="box-content">
+                    <div>
+                        <label>{{family.name}}</label>
+                    </div>
+                    <div class="money">
+                        <label>Total:</label>{{family.total | currency : $ : 0 }}
+                    </div>
+                    <div class="money">
+                        <label>Dev:</label>{{family.dev | signed}}
+                    </div>
                 </div>
             </div>
             <div class="effects">
                 <div class="draggable" bp-draggable>
                     <div class="cureset" ng-repeat="effect in family.effects" ng-controller="effect-controller">
                         <div class="cure" ng-class="'level' + effect.level">
-                            <div>
-                                <label ng-class="'level' + effect.level">{{effect.id}}</label>
-                                <span class="price pull-right">
-                                    $ <input type="number" ng-model="effect.price" /><br />
-                                    {{ dev(effect) | signed }}
-                                </span>
-                            </div>
-                            <div class="conc">
-                                {{effect.boundary[0]}} - {{effect.boundary[1]}} <i></i>
-                            </div>
-                            <ul class="boundary">
-                                <li ng-repeat="box in boxes" ng-class="boxClass(effect.boundary, box)"></li>
-                            </ul>
-                        </div>
-                        <div class="react" ng-show="effect.reaction">
-                            <div>
-                                <label>{{effect.reaction.upgrade.machine}}</label>
-                            </div>
-                            <div class="upgradeconc">
-                                <span ng-show="effect.reaction.upgrade.combine">
-                                    <i ng-class="effect.reaction.upgrade.combine"></i> +
-                                </span>
+                            <div class="box-content">
+                                <div>
+                                    <label ng-class="'level' + effect.level">{{effect.id}}</label>
+                                    <span class="price pull-right">
+                                        $ <input type="number" ng-model="effect.price" /><br />
+                                        {{ dev(effect) | signed }}
+                                    </span>
+                                </div>
                                 <div class="conc">
-                                    {{effect.reaction.upgrade.conc[0]}} - {{effect.reaction.upgrade.conc[1]}} <i></i>
+                                    {{effect.boundary[0]}} - {{effect.boundary[1]}} <i></i>
                                 </div>
                                 <ul class="boundary">
-                                    <li ng-repeat="box in boxes" ng-class="boxClass(effect.reaction.upgrade.conc, box)"></li>
+                                    <li ng-repeat="box in boxes" ng-class="boxClass(effect.boundary, box)"></li>
                                 </ul>
+                            </div>
+                        </div>
+                        <div class="react" ng-show="effect.reaction">
+                            <div class="box-content">
+                                <div>
+                                    <label>{{effect.reaction.upgrade.machine}}</label>
+                                </div>
+                                <div class="upgradeconc">
+                                    <span ng-show="effect.reaction.upgrade.combine">
+                                        <i ng-class="effect.reaction.upgrade.combine"></i> +
+                                    </span>
+                                    <div class="conc">
+                                        {{effect.reaction.upgrade.conc[0]}} - {{effect.reaction.upgrade.conc[1]}} <i></i>
+                                    </div>
+                                    <ul class="boundary">
+                                        <li ng-repeat="box in boxes" ng-class="boxClass(effect.reaction.upgrade.conc, box)"></li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
