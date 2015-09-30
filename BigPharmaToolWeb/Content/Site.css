@@ -14,16 +14,20 @@ input {
   background-color: transparent;
   border: 1px dashed gray;
   text-align: right;
-  width: 40px;
+  width: 35px;
 }
 .container-fluid {
-  max-width: 1660px;
+  max-width: 1780px;
 }
 .curerow {
   position: relative;
   height: 85px;
   margin-bottom: 10px;
   white-space: nowrap;
+}
+.header .family,
+.header .cure {
+  cursor: pointer;
 }
 .family {
   position: absolute;
@@ -50,6 +54,11 @@ input {
   right: 0;
   bottom: 0;
 }
+@media (max-width: 1700px) {
+  .draggable {
+    cursor: ew-resize;
+  }
+}
 .cureset {
   display: inline-block;
 }
@@ -68,7 +77,7 @@ input {
   float: left;
   background-color: #283232;
   color: white;
-  width: 130px;
+  width: 160px;
   height: 85px;
   padding: 10px;
   margin-right: 10px;
@@ -117,19 +126,22 @@ label.level4 {
 .level4 .boundary li.ib {
   background-color: #d5db7d;
 }
+.boundary li.ib {
+  background-color: white;
+}
 .upgradeconc {
   line-height: 25px;
 }
 div.conc {
   display: inline-block;
-  line-height: 18px;
+  line-height: 25px;
 }
 div.conc i {
   display: inline-block;
   width: 11px;
   height: 14px;
   background-image: url("images/conc-sm.png");
-  margin-bottom: 4px;
+  margin-bottom: 7px;
 }
 i {
   display: inline-block;
@@ -154,6 +166,11 @@ i.catalyst5 {
 }
 .price {
   text-align: right;
+}
+.family .money label {
+  display: inline-block;
+  font-weight: normal;
+  width: 40px;
 }
 pre {
   display: none;

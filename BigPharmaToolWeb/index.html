@@ -8,38 +8,52 @@
 </head>
 <body>
     <div class="container-fluid">
-        <div class="curerow">
-            <div class="family"></div>
+        <div class="curerow header">
+            <div class="family" ng-click="sortFamilies()">
+                <label>Family</label>
+            </div>
             <div class="effects">
-                <div class="cureset" ng-repeat="level in levels">
-                    <div class="cure" ng-click="sort(level)">
-                        <div>
-                            <label>Level {{level + 1}}</label>
+                <div class="draggable" bp-draggable>
+                    <div class="cureset" ng-repeat="level in levels">
+                        <div class="cure" ng-click="sort($index)">
+                            <div>
+                                <label>Level {{$index + 1}}</label>
+                            </div>
+                            <div>Avg: {{level.avg | currency : $ : 0 }}</div>
                         </div>
-                        <div>Avg: {{avg(level) | currency : $ : 0 }}</div>
+                        <div class="react"></div>
                     </div>
-                    <div class="react"></div>
                 </div>
             </div>
         </div>
         <div class="curerow" ng-repeat="family in effectFamilies">
-            <div class="family">{{family.name}}</div>
+            <div class="family">
+                <div>
+                    <label>{{family.name}}</label>
+                </div>
+                <div class="money">
+                    <label>Total:</label>{{family.total | currency : $ : 0 }}
+                </div>
+                <div class="money">
+                    <label>Dev:</label>{{family.dev | signed}}
+                </div>
+            </div>
             <div class="effects">
                 <div class="draggable" bp-draggable>
-                    <div class="cureset" ng-repeat="effect in family.effects">
+                    <div class="cureset" ng-repeat="effect in family.effects" ng-controller="effect-controller">
                         <div class="cure" ng-class="'level' + effect.level">
                             <div>
                                 <label ng-class="'level' + effect.level">{{effect.id}}</label>
                                 <span class="price pull-right">
-                                    $ <input type="number" ng-model="effect.price" /><br/>
-                                    {{ dev(effect) }}
+                                    $ <input type="number" ng-model="effect.price" /><br />
+                                    {{ dev(effect) | signed }}
                                 </span>
                             </div>
                             <div class="conc">
                                 {{effect.boundary[0]}} - {{effect.boundary[1]}} <i></i>
                             </div>
                             <ul class="boundary">
-                                <li ng-repeat="box in boxes" ng-class="boxClass(effect, box)"></li>
+                                <li ng-repeat="box in boxes" ng-class="boxClass(effect.boundary, box)"></li>
                             </ul>
                         </div>
                         <div class="react" ng-show="effect.reaction">
@@ -53,6 +67,9 @@
                                 <div class="conc">
                                     {{effect.reaction.upgrade.conc[0]}} - {{effect.reaction.upgrade.conc[1]}} <i></i>
                                 </div>
+                                <ul class="boundary">
+                                    <li ng-repeat="box in boxes" ng-class="boxClass(effect.reaction.upgrade.conc, box)"></li>
+                                </ul>
                             </div>
                         </div>
                     </div>

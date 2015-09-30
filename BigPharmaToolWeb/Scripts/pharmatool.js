@@ -3,6 +3,8 @@
     var module = angular.module("big-pharma-tool", []);
 
     function applicationController(scope, dataService) {
+        var families = {};
+
         function avg(array) {
             var sum = 0,
                 i;
@@ -13,6 +15,18 @@
                 return null;
             }
             return Math.round(sum / array.length);
+        }
+
+        function sum(array) {
+            var val = 0,
+                i;
+            for (i = 0; i < array.length; i++) {
+                val += array[i];
+            }
+            if (array.length === 0) {
+                return null;
+            }
+            return val;
         }
 
         function effectsInFamily(effects, family) {
@@ -32,51 +46,96 @@
                 effectGroups = $.map(rootEffects, function (rootEffect) {
                     return {
                         name: rootEffect.family,
+                        total: null,
+                        dev: 0,
                         effects: effectsInFamily(effects, rootEffect.family)
                     };
-                });
+                }),
+                i;
 
             scope.effectFamilies = effectGroups;
+            for (i = 0; i < effectGroups.length; i++) {
+                families[effectGroups[i].name] = effectGroups[i];
+            }
         }
 
-        scope.sort = function(level) {
-            scope.effectFamilies.sort(function (a, b) {
-                if (!b.effects[level].price) {
-                    return -1;
-                } else if (!a.effects[level].price) {
-                    return 1;
-                }
-                return b.effects[level].price - a.effects[level].price;
-            });
-        }
-
-        scope.boxClass = function(effect, index) {
-            var value = index + 1,
-                isInBoundary = effect.boundary[0] <= value && effect.boundary[1] >= value;
-            return isInBoundary ? "ib" : "oob";
-        }
-
-        scope.avg = function(level) {
+        function levelAvg(level) {
             return avg($.map($.grep(scope.effectFamilies, function (f) { return f.effects[level] && f.effects[level].price; }), function (f) { return f.effects[level].price; }));
         }
 
-        scope.dev = function(effect) {
+        function familySum(familyName) {
+            return sum($.map($.grep(families[familyName].effects, function(eff) { return eff.price; }), function(eff) { return eff.price; }));
+        }
+
+        function familyDev(familyName) {
+            return sum($.map($.grep(families[familyName].effects, function (eff) { return eff.price; }), function (eff) { return diffFromAvg(eff); }));
+        }
+
+        function diffFromAvg(effect) {
             var diff;
             if (!effect.price) {
                 return null;
             }
-            diff = effect.price - scope.avg(effect.level);
-            if (diff < 0) {
-                return "" + diff;
-            } else if (diff > 0) {
-                return "+" + diff;
-            } else {
-                return "-";
-            }
+            diff = effect.price - scope.levels[effect.level].avg;
+            return diff;
         }
 
+        scope.sort = function (level) {
+            scope.effectFamilies.sort(function (a, b) {
+                if (a.effects[level] && b.effects[level] && a.effects[level].price && b.effects[level].price) {
+                    return b.effects[level].price - a.effects[level].price;
+                }
+                if ((!a.effects[level] || !a.effects[level].price) && (!b.effects[level] || !b.effects[level].price)) {
+                    return 0;
+                }
+                if (!b.effects[level] || !b.effects[level].price) {
+                    return -1;
+                }
+                if (!a.effects[level] || !a.effects[level].price) {
+                    return 1;
+                }
+            });
+        }
+
+        scope.sortFamilies = function() {
+            scope.effectFamilies.sort(function (a, b) {
+                if (a.dev === b.dev) {
+                    return 0;
+                }
+                if (b.dev == null) {
+                    return -1;
+                }
+                if (a.dev == null) {
+                    return 1;
+                }
+                return b.dev - a.dev;
+            });
+        }
+
+        scope.boxClass = function(boundary, index) {
+            var value = index + 1,
+                isInBoundary;
+            if (!boundary) {
+                return "";
+            }
+            isInBoundary = boundary[0] <= value && boundary[1] >= value;
+            return isInBoundary ? "ib" : "oob";
+        }
+
+        scope.dev = function(effect) {
+            return diffFromAvg(effect);
+        }
+
+        scope.$on("effect.price.updated", function(evt, effect) {
+            scope.levels[effect.level].avg = levelAvg(effect.level);
+            families[effect.family].total = familySum(effect.family);
+            $.each(scope.effectFamilies, function(i, fam) {
+                fam.dev = familyDev(fam.name);
+            });
+        });
+
         scope.boxes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
-        scope.levels = [0, 1, 2, 3, 4];
+        scope.levels = [{}, {}, {}, {}, {}];
         scope.effectFamilies = [];
         dataService
             .getEffects()
@@ -85,25 +144,36 @@
 
     module.controller("app-controller", ["$scope", "data-service", applicationController]);
 
+    function effectController(scope) {
+        scope.$watch("effect.price", function() {
+            scope.$emit("effect.price.updated", scope.effect);
+        });
+    }
+
+    module.controller("effect-controller", ["$scope", effectController]);
+
+    function signedFilter() {
+        return function(value) {
+            if (value < 0) {
+                return "" + value;
+            } else if (value > 0) {
+                return "+" + value;
+            } else {
+                return "-";
+            }
+        }
+    }
+
+    module.filter("signed", signedFilter);
+
     function dataServiceImpl(http, q) {
 
         this.getEffects = function () {
             var def = q.defer();
             http.get("/data/effects.json")
                 .then(function (response) {
-
                     def.resolve(response.data);
                     return;
-
-                    var effects = {},
-                        effect,
-                        i;
-                    for (i = 0; i < response.data.length; i++) {
-                        effect = response.data[i];
-                        effects[effect.id] = effect;
-                    }
-
-                    def.resolve(effects);
                 });
             return def.promise;
         }
@@ -113,7 +183,7 @@
 
     function scrollableDirective() {
         var all = [],
-            totalWidth = 1500;
+            totalWidth = 1620;
 
         return {
             restrict: "A",
@@ -142,7 +212,6 @@
                         deltaX = startX - relX;
                         newX = elementStartX - deltaX;
                         offsetX = newX - initialX;
-                        console.log("initial " + initialX + " newX " + newX + " offset by " + offsetX + " so " + (offsetX + totalWidth) + " > parent " + element.parent().width() + " || " + (element.parent().width() > totalWidth));
                         if (offsetX < 0 && (offsetX + totalWidth >= element.parent().width())) {
                             $(all).offset({ left: newX });
                         }

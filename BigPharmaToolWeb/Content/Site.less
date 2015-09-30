@@ -31,12 +31,12 @@ input {
     background-color: transparent;
     border: 1px dashed gray;
     text-align: right;
-    width: 40px;
+    width: 35px;
 
 }
 
 .container-fluid {
-    max-width: 1660px;
+    max-width: 1780px;
 }
 
 .curerow {
@@ -44,6 +44,11 @@ input {
     height: 85px;
     margin-bottom: 10px;
     white-space: nowrap;
+}
+
+.header .family,
+.header .cure {
+    cursor: pointer;
 }
 
 .family {
@@ -74,6 +79,12 @@ input {
     bottom: 0;
 }
 
+@media (max-width: 1700px) {
+    .draggable {
+        cursor: ew-resize;
+    }
+}
+
 .cureset {
     .inline();
 }
@@ -94,7 +105,7 @@ input {
     float: left;
     background-color: #283232;
     color: white;
-    width: 130px;
+    width: 160px;
     height: 85px;
     padding: 10px;
     margin-right: 10px;
@@ -128,6 +139,7 @@ label {
         .level2 &.ib { background-color: @level2; }
         .level3 &.ib { background-color: @level3; }
         .level4 &.ib { background-color: @level4; }
+        &.ib { background-color: white; }
     }
 }
 
@@ -137,14 +149,14 @@ label {
 
 div.conc {
     .inline();
-    line-height: 18px;
+    line-height: 25px;
 
     i {
         .inline();
         width: 11px;
         height: 14px;
         background-image: url("images/conc-sm.png");
-        margin-bottom: 4px;
+        margin-bottom: 7px;
     }
 }
 
@@ -163,6 +175,12 @@ i {
 
 .price {
     text-align: right;
+}
+
+.family .money label {
+    .inline();
+    font-weight: normal;
+    width: 40px;
 }
 
 pre {
