@@ -1,4 +1,4 @@
-## An interactive cheat cheat for the game Big Pharma
+## An interactive cheat sheet for the game Big Pharma
 
 Optimistically hacked with angular without tests. 
 
