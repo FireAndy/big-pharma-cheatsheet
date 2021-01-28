@@ -50,7 +50,9 @@
         </div>
         <div class="curerow" ng-repeat="family in effectFamilies">
             <div class="family">
+                
                 <div class="box-content">
+                    <button class="buttonToggle" ng-click="toggleFamily()">
                     <div>
                         <label>{{family.name}}</label>
                     </div>
@@ -61,6 +63,7 @@
                         <label>Dev:</label>{{family.dev | signed}}
                     </div>
                 </div>
+                </button>
             </div>
             <div class="effects">
                 <div class="draggable" bp-draggable>
