@@ -19,7 +19,7 @@ input {
 }
 
 .buttonToggle {
-    background-color: transparent; 
+    background-color: #283232; 
     width: 120px;
     position: inherit;
     top: -10px;
@@ -27,14 +27,9 @@ input {
     height: inherit;
     box-shadow: 0px 0px 0px transparent;
     border: 0px solid transparent;
-        
+    text-align: initial;        
 
 }
-.buttonToggle:hover{
-    background-color: rgb(145, 130, 0);
-    
-}
-
 
 .container-fluid {
     max-width: 1755px;
@@ -46,6 +41,7 @@ input {
     height: 85px;
     margin-bottom: 10px;
     white-space: nowrap
+    
 }
 
 .logo {
